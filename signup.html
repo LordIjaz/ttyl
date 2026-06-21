@@ -32,6 +32,29 @@
       100% { background-position: 0% 50%; }
     }
 
+    /* Main container for content */
+    .main-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* Website name at the top */
+    .site-name {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 2em;
+      font-weight: 700;
+      color: #00ffff; /* cyan */
+      margin-bottom: 10px;
+      letter-spacing: 2px;
+      animation: pulseColor 2s infinite alternate;
+    }
+
+    @keyframes pulseColor {
+      0% { color: #00ffff; }
+      100% { color: #66ffff; }
+    }
+
     /* Container card with semi-transparent background and shadow */
     .container {
       background: rgba(255, 255, 255, 0.05);
@@ -44,16 +67,9 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      transition: transform 0.3s, box-shadow 0.3s;
     }
 
-    /* Hover effect for container */
-    .container:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 12px 30px rgba(0,0,0,0.4);
-    }
-
-    /* Header text styles */
+    /* Heading styles */
     h1 {
       font-size: 2.5em;
       margin-bottom: 10px;
@@ -62,7 +78,6 @@
       text-align: center;
     }
 
-    /* Subheading */
     h2 {
       font-size: 1.5em;
       margin-bottom: 20px;
@@ -94,7 +109,7 @@
       box-shadow: 0 0 12px #00ffff inset;
     }
 
-    /* Signup button with glow hover */
+    /* Sign Up button with glow hover */
     button {
       padding: 15px;
       background: linear-gradient(135deg, #00ffff, #009999);
@@ -147,7 +162,7 @@
       transform: translateY(-2px);
     }
 
-    /* Apple style with warm contrast */
+    /* Apple style */
     .apple-btn {
       background: linear-gradient(135deg, #FF7F50, #FF6347);
     }
@@ -189,20 +204,24 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 </head>
 <body>
-  <div class="container">
-    <h1>Create Your Account</h1>
-    <h2>Sign up to get started</h2>
-    <form id="signup-form">
-      <input type="email" id="email" placeholder="Email" required />
-      <input type="password" id="password" placeholder="Password" required />
-      <button type="submit">Sign Up</button>
-    </form>
-    <div class="social-buttons">
-      <button class="social-btn google-btn" id="googleSignUp">Sign Up with Google</button>
-      <button class="social-btn apple-btn" id="appleSignUp">Sign Up with Apple</button>
-    </div>
-    <div class="back-link">
-      <a href="index.html" style="color:#66ffff;text-decoration:none;">Back to Home</a>
+  <div class="main-container">
+    <!-- Website Name at the top -->
+    <div class="site-name">TTYL</div>
+    <div class="container">
+      <h1>Create Your Account</h1>
+      <h2>Sign up to get started</h2>
+      <form id="signup-form">
+        <input type="email" id="email" placeholder="Email" required />
+        <input type="password" id="password" placeholder="Password" required />
+        <button type="submit">Sign Up</button>
+      </form>
+      <div class="social-buttons">
+        <button class="social-btn google-btn" id="googleSignUp">Sign Up with Google</button>
+        <button class="social-btn apple-btn" id="appleSignUp">Sign Up with Apple</button>
+      </div>
+      <div class="back-link" style="margin-top:15px;">
+        <a href="index.html" style="color:#66ffff;text-decoration:none;">Back to Home</a>
+      </div>
     </div>
   </div>
 

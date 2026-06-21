@@ -24,7 +24,6 @@
       background: linear-gradient(270deg, #1e3c72, #2a5298, #1e3c72);
       background-size: 600% 600%;
       animation: gradientBG 15s ease infinite;
-      color: #fff;
     }
 
     @keyframes gradientBG {
@@ -33,7 +32,30 @@
       100% { background-position: 0% 50%; }
     }
 
-    /* Container card with semi-transparent background and subtle shadow */
+    /* Main container */
+    .main-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* Website name at the top */
+    .site-name {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 2em;
+      font-weight: 700;
+      color: #00ffff;
+      margin-bottom: 10px;
+      letter-spacing: 2px;
+      animation: pulseColor 2s infinite alternate;
+    }
+
+    @keyframes pulseColor {
+      0% { color: #00ffff; }
+      100% { color: #66ffff; }
+    }
+
+    /* Container card with semi-transparent background and shadow */
     .container {
       background: rgba(255, 255, 255, 0.05);
       padding: 40px;
@@ -45,16 +67,9 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      transition: transform 0.3s, box-shadow 0.3s;
     }
 
-    /* Add slight hover effect to container */
-    .container:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 12px 30px rgba(0,0,0,0.4);
-    }
-
-    /* Header with modern font and color */
+    /* Header text styles */
     h1 {
       font-size: 2.5em;
       margin-bottom: 10px;
@@ -95,7 +110,7 @@
       box-shadow: 0 0 12px #00ffff inset;
     }
 
-    /* Submit button with glow effect on hover */
+    /* Login button */
     button {
       padding: 15px;
       background: linear-gradient(135deg, #00ffff, #009999);
@@ -195,20 +210,24 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 </head>
 <body>
-  <div class="container">
-    <h1>Welcome Back</h1>
-    <h2>Log in to your account</h2>
-    <form id="login-form">
-      <input type="email" id="email" placeholder="Email" required />
-      <input type="password" id="password" placeholder="Password" required />
-      <button type="submit">Log In</button>
-    </form>
-    <div class="social-buttons">
-      <button class="social-btn google-btn" id="googleSignIn">Sign In with Google</button>
-      <button class="social-btn apple-btn" id="appleSignIn">Sign In with Apple</button>
-    </div>
-    <div class="links">
-      <a href="signup.html">Create an account</a>
+  <div class="main-container">
+    <!-- Website Name at the top -->
+    <div class="site-name">TTYL</div>
+    <div class="container">
+      <h1>Create an Account</h1>
+      <h2>Sign up to get started</h2>
+      <form id="signup-form">
+        <input type="email" id="email" placeholder="Email" required />
+        <input type="password" id="password" placeholder="Password" required />
+        <button type="submit">Sign Up</button>
+      </form>
+      <div class="social-buttons">
+        <button class="social-btn google-btn" id="googleSignUp">Sign Up with Google</button>
+        <button class="social-btn apple-btn" id="appleSignUp">Sign Up with Apple</button>
+      </div>
+      <div class="back-link" style="margin-top:15px;">
+        <a href="index.html" style="color:#66ffff;text-decoration:none;">Back to Home</a>
+      </div>
     </div>
   </div>
 
@@ -226,27 +245,27 @@
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
 
-    // Handle email/password login
-    document.getElementById('login-form').addEventListener('submit', function(e) {
+    // Handle email/password sign-up
+    document.getElementById('signup-form').addEventListener('submit', function(e) {
       e.preventDefault();
       const email = document.getElementById('email').value;
       const password = document.getElementById('password').value;
-      auth.signInWithEmailAndPassword(email, password)
+      auth.createUserWithEmailAndPassword(email, password)
         .then(() => {
-          alert('Logged in successfully!');
-          window.location.href = 'main.html'; // or dashboard
+          alert('Account created successfully!');
+          window.location.href = 'login.html';
         })
         .catch((error) => {
           alert('Error: ' + error.message);
         });
     });
 
-    // Google sign-in
-    document.getElementById('googleSignIn').addEventListener('click', () => {
+    // Google sign-up
+    document.getElementById('googleSignUp').addEventListener('click', () => {
       const provider = new firebase.auth.GoogleAuthProvider();
       auth.signInWithPopup(provider)
         .then((result) => {
-          alert('Signed in with Google!');
+          alert('Signed up with Google!');
           window.location.href = 'main.html';
         })
         .catch((error) => {
@@ -254,9 +273,9 @@
         });
     });
 
-    // Apple sign-in placeholder
-    document.getElementById('appleSignIn').addEventListener('click', () => {
-      alert('Apple Sign-In is not implemented yet.');
+    // Apple sign-up placeholder
+    document.getElementById('appleSignUp').addEventListener('click', () => {
+      alert('Apple Sign-Up is not implemented yet.');
     });
   </script>
 </body>
