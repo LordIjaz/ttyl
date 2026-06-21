@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Sign Up - TTYL</title>
+  <title>TTYL - Talk To You Later</title>
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet" />
   <style>
@@ -14,7 +14,7 @@
       box-sizing: border-box;
     }
 
-    /* Body with subtle background */
+    /* Body background */
     body {
       font-family: 'Montserrat', sans-serif;
       background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
@@ -26,102 +26,110 @@
       justify-content: center;
     }
 
-    /* Header with soft glow */
+    /* Header with subtle glow using warm orange */
     header {
       width: 100%;
       padding: 20px;
       background: rgba(0, 0, 0, 0.2);
       backdrop-filter: blur(8px);
-      text-align: center;
-      box-shadow: inset 0 0 20px rgba(255, 215, 0, 0.2);
     }
 
     header h1 {
       font-size: 2.5em;
       letter-spacing: 2px;
-      color: #ffd700;
+      color: #FFB300; /* Warm orange */
       font-weight: 700;
-      /* Subtle glow */
-      text-shadow: 0 0 4px #ffd700, 0 0 8px #ffd700;
+      /* Light underglow effect */
+      text-shadow: 0 0 4px #FFB300, 0 0 8px #FFB300;
     }
 
-    /* Container for form with gentle glow */
-    .container {
-      margin: 40px auto;
-      padding: 30px;
-      max-width: 400px;
-      width: 100%;
-      background: rgba(0,0,0,0.15);
-      border-radius: 15px;
-      box-shadow: 0 0 15px rgba(255, 215, 0, 0.2);
-      backdrop-filter: blur(8px);
-      border: 1px solid rgba(255, 215, 0, 0.2);
+    /* Hero section with gentle overlay using warm orange glow */
+    .hero {
       display: flex;
       flex-direction: column;
       align-items: center;
+      justify-content: center;
+      padding: 80px 20px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
     }
 
-    /* Title with subtle glow */
-    h2 {
-      font-size: 2em;
+    .hero::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: radial-gradient(circle, rgba(255, 177, 0, 0.05), transparent 70%);
+      z-index: 0;
+      animation: pulse 4s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.02); opacity: 0.9; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      max-width: 800px;
+    }
+
+    /* Main heading with soft orange glow */
+    .hero h2 {
+      font-size: 3em;
       margin-bottom: 20px;
-      color: #ffd700;
-      text-shadow: 0 0 4px #ffd700, 0 0 8px #ffd700;
-      animation: glowText 2s infinite alternate;
-    }
-
-    @keyframes glowText {
-      from {
-        text-shadow: 0 0 4px #ffd700, 0 0 8px #ffd700;
-      }
-      to {
-        text-shadow: 0 0 8px #ffd700, 0 0 12px #ffd700;
-      }
-    }
-
-    /* Form styles */
-    form {
-      width: 100%;
-      display: flex;
-      flex-direction: column;
-    }
-
-    input {
-      padding: 12px 15px;
-      margin-bottom: 15px;
-      border: none;
-      border-radius: 8px;
-      font-size: 1em;
-      outline: none;
-      background-color: rgba(255,255,255,0.1);
       color: #fff;
-      box-shadow: inset 0 0 10px rgba(255, 215, 0, 0.2);
-      transition: box-shadow 0.3s, background-color 0.3s;
+      /* Subtle orange glow */
+      text-shadow: 0 0 4px #FFB300, 0 0 8px #FFB300;
     }
 
-    input:focus {
-      box-shadow: inset 0 0 15px #ffd700, inset 0 0 20px #ffd700;
-      background-color: rgba(255,255,255,0.2);
+    /* Subtext */
+    .hero p {
+      font-size: 1.5em;
+      margin-bottom: 40px;
+      color: #ccc;
+      line-height: 1.4;
     }
 
-    /* Submit button with gentle glow */
-    button {
-      padding: 15px;
-      background: linear-gradient(135deg, #ffd700, #ffb700);
-      color: #000;
+    /* Buttons container */
+    .btn-group {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    /* Buttons with subtle glow using warm orange */
+    .btn {
+      padding: 15px 30px;
       font-size: 1.2em;
       font-weight: 600;
-      border: none;
       border-radius: 8px;
+      border: none;
       cursor: pointer;
-      margin-top: 10px;
-      box-shadow: 0 0 15px #ffd700, inset 0 0 10px #ffd700;
+      text-decoration: none;
       transition: all 0.3s ease;
+      box-shadow: 0 0 8px #FFB300 inset; /* Light glow */
     }
 
-    button:hover {
-      background: linear-gradient(135deg, #e6c200, #d6a600);
-      box-shadow: 0 0 20px #ffd700, inset 0 0 15px #ffd700;
+    /* SignUp button with warm orange gradient */
+    .btn-signup {
+      background: linear-gradient(135deg, #FFB300, #FFA000);
+      color: #000;
+    }
+    .btn-signup:hover {
+      box-shadow: 0 0 12px #FFB300 inset, 0 0 4px #FFB300;
+      transform: translateY(-2px);
+    }
+
+    /* Login button with muted color */
+    .btn-login {
+      background-color: #ccc;
+    }
+    .btn-login:hover {
+      box-shadow: 0 0 12px #bbb inset, 0 0 4px #bbb;
       transform: translateY(-2px);
     }
 
@@ -133,7 +141,7 @@
       gap: 15px;
     }
 
-    /* Social buttons styling with subtle glow */
+    /* Social buttons styling with soft glow in warm tones */
     .social-btn {
       padding: 12px;
       border: none;
@@ -145,10 +153,10 @@
       align-items: center;
       justify-content: center;
       transition: all 0.3s ease;
-      box-shadow: 0 0 10px #ffd700, inset 0 0 8px #ffd700;
+      box-shadow: 0 0 10px #FFB300, inset 0 0 8px #FFB300;
     }
 
-    /* Google button style */
+    /* Google style */
     .google-btn {
       background: linear-gradient(135deg, #4285F4, #357ae8);
     }
@@ -157,16 +165,16 @@
       transform: translateY(-2px);
     }
 
-    /* Apple button style (placeholder) */
+    /* Apple style - warm orange contrast */
     .apple-btn {
-      background: linear-gradient(135deg, #000, #222);
+      background: linear-gradient(135deg, #FF7F50, #FF6347);
     }
     .apple-btn:hover {
-      box-shadow: 0 0 15px #000, inset 0 0 8px #000;
+      box-shadow: 0 0 15px #FF7F50, inset 0 0 8px #FF7F50;
       transform: translateY(-2px);
     }
 
-    /* Back link styling */
+    /* Back link style */
     .back-link {
       margin-top: 15px;
       font-size: 1em;
@@ -176,8 +184,8 @@
     }
 
     .back-link:hover {
-      color: #ffd700;
-      text-shadow: 0 0 8px #ffd700;
+      color: #FFB300;
+      text-shadow: 0 0 8px #FFB300;
     }
 
     /* Responsive adjustments */
