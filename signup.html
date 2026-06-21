@@ -14,54 +14,60 @@
       box-sizing: border-box;
     }
 
-    /* Body with subtle background */
+    /* Body with animated gradient background */
     body {
       font-family: 'Montserrat', sans-serif;
-      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-      color: #f0f0f0;
       min-height: 100vh;
       display: flex;
-      flex-direction: column;
       align-items: center;
       justify-content: center;
+      background: linear-gradient(270deg, #1e3c72, #2a5298, #1e3c72);
+      background-size: 600% 600%;
+      animation: gradientBG 15s ease infinite;
     }
 
-    /* Header without glow */
-    header {
-      width: 100%;
-      padding: 20px;
-      background: rgba(0, 0, 0, 0.2);
-      backdrop-filter: blur(8px);
+    @keyframes gradientBG {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
     }
 
-    header h1 {
-      font-size: 2.5em;
-      letter-spacing: 2px;
-      color: #ffd700; /* Keep the color */
-      font-weight: 700;
-    }
-
-    /* Container for form without glow */
+    /* Container card with semi-transparent background and shadow */
     .container {
-      margin: 40px auto;
-      padding: 30px;
-      max-width: 400px;
-      width: 100%;
-      background: rgba(0,0,0,0.15);
+      background: rgba(255, 255, 255, 0.05);
+      padding: 40px;
       border-radius: 15px;
-      box-shadow: 0 0 15px rgba(255, 215, 0, 0.2);
-      backdrop-filter: blur(8px);
-      border: 1px solid rgba(255, 215, 0, 0.2);
+      max-width: 400px;
+      width: 90%;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+      backdrop-filter: blur(10px);
       display: flex;
       flex-direction: column;
       align-items: center;
+      transition: transform 0.3s, box-shadow 0.3s;
     }
 
-    /* Title without glow */
+    /* Hover effect for container */
+    .container:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 30px rgba(0,0,0,0.4);
+    }
+
+    /* Header text styles */
+    h1 {
+      font-size: 2.5em;
+      margin-bottom: 10px;
+      color: #00ffff; /* cyan */
+      letter-spacing: 2px;
+      text-align: center;
+    }
+
+    /* Subheading */
     h2 {
-      font-size: 2em;
+      font-size: 1.5em;
       margin-bottom: 20px;
-      color: #ffd700; /* Keep the color */
+      color: #66ffff; /* light cyan */
+      text-align: center;
     }
 
     /* Form styles */
@@ -72,49 +78,53 @@
     }
 
     input {
-      padding: 12px 15px;
+      padding: 14px 16px;
       margin-bottom: 15px;
       border: none;
       border-radius: 8px;
       font-size: 1em;
       outline: none;
-      background-color: rgba(255,255,255,0.1);
+      background: rgba(255,255,255,0.1);
       color: #fff;
+      transition: background 0.3s, box-shadow 0.3s;
     }
 
     input:focus {
-      box-shadow: inset 0 0 15px #ffd700, inset 0 0 20px #ffd700;
-      background-color: rgba(255,255,255,0.2);
+      background: rgba(255,255,255,0.2);
+      box-shadow: 0 0 12px #00ffff inset;
     }
 
-    /* Submit button without glow */
+    /* Signup button with glow hover */
     button {
       padding: 15px;
-      background: linear-gradient(135deg, #ffd700, #ffb700);
-      color: #000;
-      font-size: 1.2em;
-      font-weight: 600;
+      background: linear-gradient(135deg, #00ffff, #009999);
       border: none;
       border-radius: 8px;
+      font-size: 1.2em;
+      font-weight: 600;
+      color: #fff;
       cursor: pointer;
-      margin-top: 10px;
+      transition: box-shadow 0.3s, transform 0.3s, background 0.3s;
+      box-shadow: 0 0 10px #00ffff;
     }
 
     button:hover {
-      background: linear-gradient(135deg, #e6c200, #d6a600);
+      background: linear-gradient(135deg, #00cccc, #006666);
+      box-shadow: 0 0 20px #00ffff;
+      transform: translateY(-2px);
     }
 
     /* Social sign-in buttons container */
     .social-buttons {
-      margin-top: 20px;
+      margin-top: 30px;
       display: flex;
       flex-direction: column;
       gap: 15px;
     }
 
-    /* Social buttons styling, no glow */
+    /* Social buttons styling with glow hover */
     .social-btn {
-      padding: 12px;
+      padding: 14px;
       border: none;
       border-radius: 8px;
       font-size: 1.1em;
@@ -123,37 +133,54 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      transition: box-shadow 0.3s, transform 0.3s, background 0.3s;
+      box-shadow: 0 0 10px #00ffff;
     }
 
     /* Google style */
     .google-btn {
       background: linear-gradient(135deg, #4285F4, #357ae8);
     }
+    .google-btn:hover {
+      background: linear-gradient(135deg, #3060c0, #214080);
+      box-shadow: 0 0 20px #00ffff;
+      transform: translateY(-2px);
+    }
 
-    /* Apple style */
+    /* Apple style with warm contrast */
     .apple-btn {
       background: linear-gradient(135deg, #FF7F50, #FF6347);
     }
+    .apple-btn:hover {
+      background: linear-gradient(135deg, #FF6347, #FF4500);
+      box-shadow: 0 0 20px #FF7F50;
+      transform: translateY(-2px);
+    }
 
-    /* Back link styling */
+    /* Back link style */
     .back-link {
       margin-top: 15px;
       font-size: 1em;
-      color: #ccc;
+      color: #66ffff;
       text-decoration: none;
+      transition: color 0.3s, text-shadow 0.3s;
     }
 
     .back-link:hover {
-      color: #ffd700;
+      color: #ffffff;
+      text-shadow: 0 0 8px #00ffff;
     }
 
-    /* Responsive styles */
+    /* Responsive adjustments */
     @media(max-width: 500px){
       .container {
         padding: 20px;
       }
+      h1 {
+        font-size: 2em;
+      }
       h2 {
-        font-size: 1.8em;
+        font-size: 1.3em;
       }
     }
   </style>
@@ -162,29 +189,25 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 </head>
 <body>
-  <header>
-    <h1>TTYL - Sign Up</h1>
-  </header>
-
   <div class="container">
-    <h2>Create Your Account</h2>
+    <h1>Create Your Account</h1>
+    <h2>Sign up to get started</h2>
     <form id="signup-form">
       <input type="email" id="email" placeholder="Email" required />
       <input type="password" id="password" placeholder="Password" required />
       <button type="submit">Sign Up</button>
     </form>
-
-    <!-- Social Sign-In Buttons -->
     <div class="social-buttons">
-      <button class="social-btn google-btn" id="googleSignIn">Sign Up with Google</button>
-      <button class="social-btn apple-btn" id="appleSignIn">Sign Up with Apple</button>
+      <button class="social-btn google-btn" id="googleSignUp">Sign Up with Google</button>
+      <button class="social-btn apple-btn" id="appleSignUp">Sign Up with Apple</button>
     </div>
-
-    <a href="index.html" class="back-link">Back to Home</a>
+    <div class="back-link">
+      <a href="index.html" style="color:#66ffff;text-decoration:none;">Back to Home</a>
+    </div>
   </div>
 
   <script>
-    // Firebase configuration (replace with your actual config)
+    // Your Firebase configuration (replace with your actual config)
     const firebaseConfig = {
       apiKey: "YOUR_API_KEY",
       authDomain: "YOUR_AUTH_DOMAIN",
@@ -193,10 +216,11 @@
       messagingSenderId: "YOUR_SENDER_ID",
       appId: "YOUR_APP_ID"
     };
+    // Initialize Firebase
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
 
-    // Email/password sign-up
+    // Handle email/password sign-up
     document.getElementById('signup-form').addEventListener('submit', function(e) {
       e.preventDefault();
       const email = document.getElementById('email').value;
@@ -211,12 +235,12 @@
         });
     });
 
-    // Google Sign-In
-    document.getElementById('googleSignIn').addEventListener('click', () => {
+    // Google sign-up
+    document.getElementById('googleSignUp').addEventListener('click', () => {
       const provider = new firebase.auth.GoogleAuthProvider();
       auth.signInWithPopup(provider)
         .then((result) => {
-          alert('Signed in with Google!');
+          alert('Signed up with Google!');
           window.location.href = 'main.html';
         })
         .catch((error) => {
@@ -224,9 +248,9 @@
         });
     });
 
-    // Apple Sign-In - Placeholder
-    document.getElementById('appleSignIn').addEventListener('click', () => {
-      alert('Apple Sign-In is not implemented yet. Please use Google or email/password.');
+    // Apple sign-up placeholder
+    document.getElementById('appleSignUp').addEventListener('click', () => {
+      alert('Apple Sign-Up is not implemented yet.');
     });
   </script>
 </body>
