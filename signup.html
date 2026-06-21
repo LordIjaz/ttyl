@@ -4,89 +4,210 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Sign Up - TTYL</title>
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet" />
   <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
     body {
-      margin: 0;
-      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-      background-color: #000; /* Black background */
+      font-family: 'Montserrat', sans-serif;
+      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
       color: #f0f0f0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
     }
+
+    /* Header style with glow */
     header {
-      background-color: #222;
+      width: 100%;
       padding: 20px;
+      background: rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(10px);
       text-align: center;
-      color: #ffd700;
+      box-shadow: inset 0 0 20px rgba(255, 215, 0, 0.5);
     }
+
     header h1 {
-      margin: 0;
       font-size: 2.5em;
-    }
-    .container {
-      max-width: 400px;
-      margin: 40px auto;
-      padding: 20px;
-      background-color: #222;
-      border-radius: 10px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-    }
-    h2 {
-      text-align: center;
+      letter-spacing: 2px;
       color: #ffd700;
-      margin-bottom: 20px;
+      font-weight: 700;
+      text-shadow: 0 0 20px #ffd700, 0 0 30px #ffd700, 0 0 40px #ffd700;
+      animation: glow 1.5s infinite alternate;
     }
+
+    @keyframes glow {
+      from {
+        text-shadow: 0 0 20px #ffd700, 0 0 30px #ffd700, 0 0 40px #ffd700;
+      }
+      to {
+        text-shadow: 0 0 40px #ffd700, 0 0 50px #ffd700, 0 0 60px #ffd700;
+      }
+    }
+
+    /* Container for form with glow */
+    .container {
+      margin: 40px auto;
+      padding: 30px;
+      max-width: 400px;
+      width: 100%;
+      background: rgba(0,0,0,0.2);
+      border-radius: 15px;
+      box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 215, 0, 0.3);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* Title */
+    h2 {
+      font-size: 2em;
+      margin-bottom: 20px;
+      color: #ffd700;
+      text-shadow: 0 0 15px #ffd700, 0 0 20px #ffd700;
+      animation: glowText 2s infinite alternate;
+    }
+
+    @keyframes glowText {
+      from {
+        text-shadow: 0 0 15px #ffd700, 0 0 20px #ffd700;
+      }
+      to {
+        text-shadow: 0 0 25px #ffd700, 0 0 30px #ffd700;
+      }
+    }
+
+    /* Form styles */
     form {
+      width: 100%;
       display: flex;
       flex-direction: column;
     }
+
     input {
-      padding: 12px;
+      padding: 12px 15px;
       margin-bottom: 15px;
       border: none;
-      border-radius: 5px;
+      border-radius: 8px;
       font-size: 1em;
+      outline: none;
+      background-color: rgba(255,255,255,0.1);
+      color: #fff;
+      box-shadow: inset 0 0 10px rgba(255, 215, 0, 0.3);
+      transition: box-shadow 0.3s, background-color 0.3s;
     }
+
+    input:focus {
+      box-shadow: inset 0 0 15px #ffd700, inset 0 0 20px #ffd700;
+      background-color: rgba(255,255,255,0.2);
+    }
+
+    /* Submit button style with glow effect */
     button {
       padding: 15px;
-      background-color: #ffd700;
+      background: linear-gradient(135deg, #ffd700, #ffb700);
       color: #000;
+      font-size: 1.2em;
+      font-weight: 600;
       border: none;
-      border-radius: 5px;
-      font-size: 1em;
+      border-radius: 8px;
       cursor: pointer;
-      transition: background-color 0.3s;
+      margin-top: 10px;
+      box-shadow: 0 0 20px #ffd700, inset 0 0 10px #ffd700;
+      transition: all 0.3s ease;
     }
+
     button:hover {
-      background-color: #e6c200;
+      background: linear-gradient(135deg, #e6c200, #d6a600);
+      box-shadow: 0 0 30px #ffd700, inset 0 0 15px #ffd700;
+      transform: translateY(-2px);
     }
-    .link {
-      display: block;
-      text-align: center;
+
+    /* Social buttons container */
+    .social-buttons {
+      margin-top: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    /* Social Sign-In Buttons Styling */
+    .social-btn {
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1.1em;
+      cursor: pointer;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+      box-shadow: 0 0 15px #ffd700, inset 0 0 10px #ffd700;
+    }
+
+    /* Google Button */
+    .google-btn {
+      background: linear-gradient(135deg, #4285F4, #357ae8);
+      color: #fff;
+    }
+    .google-btn:hover {
+      box-shadow: 0 0 25px #4285F4, inset 0 0 10px #4285F4;
+      transform: translateY(-2px);
+    }
+
+    /* Apple Button (placeholder) */
+    .apple-btn {
+      background: linear-gradient(135deg, #000, #222);
+      color: #fff;
+    }
+    .apple-btn:hover {
+      box-shadow: 0 0 20px #000, inset 0 0 10px #000;
+      transform: translateY(-2px);
+    }
+
+    /* Back link styling */
+    .back-link {
       margin-top: 15px;
+      font-size: 1em;
       color: #ccc;
       text-decoration: none;
+      transition: color 0.3s;
     }
-    .link:hover {
-      text-decoration: underline;
+
+    .back-link:hover {
+      color: #ffd700;
+      text-shadow: 0 0 10px #ffd700;
     }
-    footer {
-      background-color: #222;
-      color: #ccc;
-      text-align: center;
-      padding: 20px;
-      position: fixed;
-      width: 100%;
-      bottom: 0;
+
+    /* Responsive adjustments */
+    @media(max-width: 500px){
+      .container {
+        padding: 20px;
+      }
+      h2 {
+        font-size: 1.8em;
+      }
     }
   </style>
-  <!-- Firebase App (the core Firebase SDK) -->
+  <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <!-- Firebase Authentication -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 </head>
 <body>
   <header>
     <h1>TTYL - Sign Up</h1>
   </header>
+
   <div class="container">
     <h2>Create Your Account</h2>
     <form id="signup-form">
@@ -94,14 +215,18 @@
       <input type="password" id="password" placeholder="Password" required />
       <button type="submit">Sign Up</button>
     </form>
-    <a href="index.html" class="link">Back to Home</a>
+
+    <!-- Social Sign-In Buttons -->
+    <div class="social-buttons">
+      <button class="social-btn google-btn" id="googleSignIn">Sign Up with Google</button>
+      <button class="social-btn apple-btn" id="appleSignIn">Sign Up with Apple</button>
+    </div>
+
+    <a href="index.html" class="back-link">Back to Home</a>
   </div>
-  <footer>
-    <p>&copy; 2024 TTYL - Talk To You Later</p>
-  </footer>
 
   <script>
-    // Your Firebase configuration (replace with your actual config)
+    // Firebase configuration (replace with your actual config)
     const firebaseConfig = {
       apiKey: "YOUR_API_KEY",
       authDomain: "YOUR_AUTH_DOMAIN",
@@ -110,26 +235,40 @@
       messagingSenderId: "YOUR_SENDER_ID",
       appId: "YOUR_APP_ID"
     };
-
-    // Initialize Firebase
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
 
+    // Email/password sign-up
     document.getElementById('signup-form').addEventListener('submit', function(e) {
       e.preventDefault();
-
       const email = document.getElementById('email').value;
       const password = document.getElementById('password').value;
-
       auth.createUserWithEmailAndPassword(email, password)
-        .then((userCredential) => {
+        .then(() => {
           alert('Account created successfully!');
-          // Redirect to login or main page
-          window.location.href = 'login.html'; // or wherever you want to redirect
+          window.location.href = 'login.html';
         })
         .catch((error) => {
           alert('Error: ' + error.message);
         });
+    });
+
+    // Google Sign-In
+    document.getElementById('googleSignIn').addEventListener('click', () => {
+      const provider = new firebase.auth.GoogleAuthProvider();
+      auth.signInWithPopup(provider)
+        .then((result) => {
+          alert('Signed in with Google!');
+          window.location.href = 'main.html'; // redirect to main app
+        })
+        .catch((error) => {
+          alert('Error: ' + error.message);
+        });
+    });
+
+    // Apple Sign-In (Placeholder)
+    document.getElementById('appleSignIn').addEventListener('click', () => {
+      alert('Apple Sign-In is not implemented yet. Please use email/password or Google.');
     });
   </script>
 </body>
