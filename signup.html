@@ -26,25 +26,22 @@
       justify-content: center;
     }
 
-    /* Header with soft glow */
+    /* Header without glow */
     header {
       width: 100%;
       padding: 20px;
       background: rgba(0, 0, 0, 0.2);
       backdrop-filter: blur(8px);
-      box-shadow: inset 0 0 20px rgba(255, 165, 0, 0.2); /* Changed glow color here */
     }
 
     header h1 {
       font-size: 2.5em;
       letter-spacing: 2px;
-      color: #ffa500; /* Changed to a warm orange */
+      color: #ffd700; /* Keep the color */
       font-weight: 700;
-      /* Subtle glow */
-      text-shadow: 0 0 4px #ffa500, 0 0 8px #ffa500;
     }
 
-    /* Container for form with gentle glow */
+    /* Container for form without glow */
     .container {
       margin: 40px auto;
       padding: 30px;
@@ -52,30 +49,19 @@
       width: 100%;
       background: rgba(0,0,0,0.15);
       border-radius: 15px;
-      box-shadow: 0 0 15px rgba(255, 165, 0, 0.2); /* Glow color changed */
+      box-shadow: 0 0 15px rgba(255, 215, 0, 0.2);
       backdrop-filter: blur(8px);
-      border: 1px solid rgba(255, 165, 0, 0.2);
+      border: 1px solid rgba(255, 215, 0, 0.2);
       display: flex;
       flex-direction: column;
       align-items: center;
     }
 
-    /* Title with subtle glow */
+    /* Title without glow */
     h2 {
       font-size: 2em;
       margin-bottom: 20px;
-      color: #ffa500; /* Changed to match the glow color */
-      text-shadow: 0 0 4px #ffa500, 0 0 8px #ffa500;
-      animation: glowText 2s infinite alternate;
-    }
-
-    @keyframes glowText {
-      from {
-        text-shadow: 0 0 4px #ffa500, 0 0 8px #ffa500;
-      }
-      to {
-        text-shadow: 0 0 8px #ffa500, 0 0 12px #ffa500;
-      }
+      color: #ffd700; /* Keep the color */
     }
 
     /* Form styles */
@@ -94,19 +80,17 @@
       outline: none;
       background-color: rgba(255,255,255,0.1);
       color: #fff;
-      box-shadow: inset 0 0 10px rgba(255, 165, 0, 0.2);
-      transition: box-shadow 0.3s, background-color 0.3s;
     }
 
     input:focus {
-      box-shadow: inset 0 0 15px #ffa500, inset 0 0 20px #ffa500;
+      box-shadow: inset 0 0 15px #ffd700, inset 0 0 20px #ffd700;
       background-color: rgba(255,255,255,0.2);
     }
 
-    /* Submit button with gentle glow */
+    /* Submit button without glow */
     button {
       padding: 15px;
-      background: linear-gradient(135deg, #ffa500, #ffb000); /* Changed gradient to matching orange tones */
+      background: linear-gradient(135deg, #ffd700, #ffb700);
       color: #000;
       font-size: 1.2em;
       font-weight: 600;
@@ -114,14 +98,10 @@
       border-radius: 8px;
       cursor: pointer;
       margin-top: 10px;
-      box-shadow: 0 0 15px #ffa500, inset 0 0 10px #ffa500; /* glow color changed */
-      transition: all 0.3s ease;
     }
 
     button:hover {
-      background: linear-gradient(135deg, #e69500, #d68f00); /* darker orange hover gradient */
-      box-shadow: 0 0 20px #ffa500, inset 0 0 15px #ffa500;
-      transform: translateY(-2px);
+      background: linear-gradient(135deg, #e6c200, #d6a600);
     }
 
     /* Social sign-in buttons container */
@@ -132,7 +112,7 @@
       gap: 15px;
     }
 
-    /* Social buttons styling with subtle glow */
+    /* Social buttons styling, no glow */
     .social-btn {
       padding: 12px;
       border: none;
@@ -143,40 +123,28 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: all 0.3s ease;
-      box-shadow: 0 0 10px #ffa500, inset 0 0 8px #ffa500; /* glow color changed */
     }
 
     /* Google style */
     .google-btn {
       background: linear-gradient(135deg, #4285F4, #357ae8);
     }
-    .google-btn:hover {
-      box-shadow: 0 0 20px #4285F4, inset 0 0 8px #4285F4;
-      transform: translateY(-2px);
-    }
 
-    /* Apple style (warm contrast, replaced dark) */
+    /* Apple style */
     .apple-btn {
       background: linear-gradient(135deg, #FF7F50, #FF6347);
     }
-    .apple-btn:hover {
-      box-shadow: 0 0 15px #FF7F50, inset 0 0 8px #FF7F50;
-      transform: translateY(-2px);
-    }
 
-    /* Back link style */
+    /* Back link styling */
     .back-link {
       margin-top: 15px;
       font-size: 1em;
       color: #ccc;
       text-decoration: none;
-      transition: color 0.3s;
     }
 
     .back-link:hover {
-      color: #ffa500; /* matching the main glow color */
-      text-shadow: 0 0 8px #ffa500;
+      color: #ffd700;
     }
 
     /* Responsive styles */
