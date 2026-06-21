@@ -240,45 +240,63 @@
     // Initialize Firebase
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
-
-    // Handle email/password sign-up
-    document.getElementById('signup-form').addEventListener('submit', function(e) {
-      e.preventDefault();
-      const email = document.getElementById('email').value;
-      const password = document.getElementById('password').value;
-      auth.createUserWithEmailAndPassword(email, password)
-        .then(() => {
-          alert('Account created successfully!');
-          window.location.href = 'main.html'; // Redirect after success
-        })
-        .catch((error) => {
-          alert('Error: ' + error.message);
-        });
-    });
-
-    // Google sign-up
-    document.getElementById('googleSignUp').addEventListener('click', () => {
-      const provider = new firebase.auth.GoogleAuthProvider();
-      auth.signInWithPopup(provider)
-        .then((result) => {
-          alert('Signed up with Google!');
-          window.location.href = 'main.html'; // Redirect after success
-        })
-        .catch((error) => {
-          alert('Error: ' + error.message);
-        });
-    });
-
-    // Apple sign-up placeholder
-    document.getElementById('appleSignUp').addEventListener('click', () => {
-      alert('Apple Sign-Up is not implemented yet.');
-    });
-
-    auth.onAuthStateChanged(user => {
-    if(user){
-      window.location.href = 'main.html';
+    // Helper to redirect safely to main page (avoid adding history entry)
+    function redirectToMain() {
+      try {
+        if (!window.location.pathname.endsWith('main.html')) {
+          window.location.replace('main.html');
+        }
+      } catch (e) {
+        window.location.href = 'main.html';
+      }
     }
-  });
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const signupForm = document.getElementById('signup-form');
+      if (signupForm) {
+        signupForm.addEventListener('submit', function(e) {
+          e.preventDefault();
+          const email = document.getElementById('email').value;
+          const password = document.getElementById('password').value;
+          // Create user then ensure sign-in and redirect
+          auth.createUserWithEmailAndPassword(email, password)
+            .then((userCredential) => {
+              // In most Firebase flows the user is already signed in at this point.
+              // As a safety, sign in explicitly then redirect.
+              return auth.signInWithEmailAndPassword(email, password)
+                .catch(() => Promise.resolve(userCredential));
+            })
+            .then(() => {
+              redirectToMain();
+            })
+            .catch((error) => {
+              alert('Error: ' + error.message);
+            });
+        });
+      }
+
+      const googleBtn = document.getElementById('googleSignUp');
+      if (googleBtn) {
+        googleBtn.addEventListener('click', () => {
+          const provider = new firebase.auth.GoogleAuthProvider();
+          auth.signInWithPopup(provider)
+            .then(() => redirectToMain())
+            .catch((error) => alert('Error: ' + error.message));
+        });
+      }
+
+      const appleBtn = document.getElementById('appleSignUp');
+      if (appleBtn) {
+        appleBtn.addEventListener('click', () => {
+          alert('Apple Sign-Up is not implemented yet.');
+        });
+      }
+    });
+
+    // Redirect if already signed in
+    auth.onAuthStateChanged(user => {
+      if (user) redirectToMain();
+    });
   </script>
 </body>
 </html>

@@ -105,6 +105,19 @@
       color: #fff;
     }
 
+    /* Screen-reader only (visually hidden) */
+    .sr-only {
+      position: absolute !important;
+      width: 1px !important;
+      height: 1px !important;
+      padding: 0 !important;
+      margin: -1px !important;
+      overflow: hidden !important;
+      clip: rect(0, 0, 0, 0) !important;
+      white-space: nowrap !important;
+      border: 0 !important;
+    }
+
     input:focus {
       background: rgba(255,255,255,0.2);
       box-shadow: 0 0 12px #00ffff inset;
@@ -232,8 +245,10 @@
       <h1>Welcome Back</h1>
       <h2>Log in to your account</h2>
       <form id="login-form">
-        <input type="email" id="email" placeholder="Email" required />
-        <input type="password" id="password" placeholder="Password" required />
+        <label class="sr-only" for="email">Email</label>
+        <input type="email" id="email" placeholder="Email" required aria-required="true" />
+        <label class="sr-only" for="password">Password</label>
+        <input type="password" id="password" placeholder="Password" required aria-required="true" />
         <button type="submit">Log In</button>
       </form>
       <!-- Login with Google -->
@@ -258,49 +273,58 @@
   measurementId: "G-TYBCD4ERG4",
   databaseURL: "https://ttyl-4534b-default-rtdb.europe-west1.firebasedatabase.app"
 };
-    };
 
     // Initialize Firebase
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
 
-    // Login with email/password
-    document.getElementById('login-form').addEventListener('submit', function(e) {
-      e.preventDefault();
-      const email = document.getElementById('email').value;
-      const password = document.getElementById('password').value;
-      auth.signInWithEmailAndPassword(email, password)
-        .then(() => {
-          window.location.href = 'main.html'; // Redirect after login
-        })
-        .catch((error) => {
-          alert('Error: ' + error.message);
-        });
-    });
-
-    // Login with Google
-    document.getElementById('googleLogin').addEventListener('click', () => {
-      const provider = new firebase.auth.GoogleAuthProvider();
-      auth.signInWithPopup(provider)
-        .then(() => {
-          window.location.href = 'main.html'; // Redirect after login
-        })
-        .catch((error) => {
-          alert('Error: ' + error.message);
-        });
-    });
-
-    // Login with Apple (simulate, as Firebase doesn't have native Apple provider in web)
-    document.getElementById('appleLogin').addEventListener('click', () => {
-      alert('Apple login is not directly supported in Firebase Web SDK. You need to implement OAuth flow.');
-      // You could implement OAuth flow here if desired
-    });
-
-    auth.onAuthStateChanged(user => {
-    if(user){
-      window.location.href = 'main.html';
+    // Helper to redirect safely to main page
+    function redirectToMain() {
+      try {
+        if (!window.location.pathname.endsWith('main.html')) {
+          window.location.replace('main.html');
+        }
+      } catch (e) {
+        window.location.href = 'main.html';
+      }
     }
-  });
+
+    // Attach event listeners after DOM is ready
+    document.addEventListener('DOMContentLoaded', () => {
+      const loginForm = document.getElementById('login-form');
+      if (loginForm) {
+        loginForm.addEventListener('submit', function(e) {
+          e.preventDefault();
+          const email = document.getElementById('email').value;
+          const password = document.getElementById('password').value;
+          auth.signInWithEmailAndPassword(email, password)
+            .then(() => redirectToMain())
+            .catch((error) => { alert('Error: ' + error.message); });
+        });
+      }
+
+      const googleBtn = document.getElementById('googleLogin');
+      if (googleBtn) {
+        googleBtn.addEventListener('click', () => {
+          const provider = new firebase.auth.GoogleAuthProvider();
+          auth.signInWithPopup(provider)
+            .then(() => redirectToMain())
+            .catch((error) => { alert('Error: ' + error.message); });
+        });
+      }
+
+      const appleBtn = document.getElementById('appleLogin');
+      if (appleBtn) {
+        appleBtn.addEventListener('click', () => {
+          alert('Apple login is not directly supported in Firebase Web SDK. You need to implement OAuth flow.');
+        });
+      }
+    });
+
+    // Also redirect if user is already signed in
+    auth.onAuthStateChanged(user => {
+      if (user) redirectToMain();
+    });
   </script>
 </body>
 </html>
