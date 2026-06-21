@@ -234,17 +234,18 @@
 
 <!-- Firebase Initialization and App Logic -->
 <script>
-  // Your Firebase config here (replace with your actual config)
+  // Firebase config (replace with your production config)
   const firebaseConfig = {
-  apiKey: "AIzaSyANtmPajpe7laVQ_sL0kCcSwixZ0aIqvy0",
-  authDomain: "ttyl-4534b.firebaseapp.com",
-  projectId: "ttyl-4534b",
-  storageBucket: "ttyl-4534b.firebasestorage.app",
-  messagingSenderId: "311574301037",
-  appId: "1:311574301037:web:b5bdc244bc8bb341e5f264",
-  measurementId: "G-TYBCD4ERG4",
-  databaseURL: "https://ttyl-4534b-default-rtdb.europe-west1.firebasedatabase.app"
-};
+    apiKey: "AIzaSyANtmPajpe7laVQ_sL0kCcSwixZ0aIqvy0",
+    authDomain: "ttyl-4534b.firebaseapp.com",
+    projectId: "ttyl-4534b",
+    storageBucket: "ttyl-4534b.firebasestorage.app",
+    messagingSenderId: "311574301037",
+    appId: "1:311574301037:web:b5bdc244bc8bb341e5f264",
+    measurementId: "G-TYBCD4ERG4",
+    databaseURL: "https://ttyl-4534b-default-rtdb.europe-west1.firebasedatabase.app"
+  };
+
   firebase.initializeApp(firebaseConfig);
   const auth = firebase.auth();
   const db = firebase.database();
@@ -265,300 +266,297 @@
   const sendBtn = document.getElementById('sendBtn');
   const statusIndicator = document.getElementById('statusIndicator');
 
+  // State
   let currentUser = null;
   let currentUserId = null;
   let currentChatUserId = null;
-  let currentChatUserName = '';
-  let currentChatUserPhoto = '';
-  let currentChatUserOnline = false;
-  let chatRef = null;
-  let lastMessagesListener = null;
-  let inboxListener = null;
+  let userItems = {}; // uid -> {item, lastMsgListener, statusListener}
 
-  // Show login overlay if not authenticated
+  // Utility: safe view switch
+  function showView(view) {
+    document.querySelectorAll('.container').forEach(c => c.style.display = 'none');
+    if (view === 'inbox') inboxView.style.display = 'block';
+    if (view === 'chat') chatView.style.display = 'block';
+  }
+
+  // Auth handling
   auth.onAuthStateChanged(user => {
     if (user) {
       currentUser = user;
       currentUserId = user.uid;
       loginOverlay.style.display = 'none';
       showView('inbox');
-      loadUserProfile();
-      loadInbox();
-      setupOnlineStatus();
+      ensureUserProfile();
+      setupPresence();
+      startInboxListeners();
     } else {
       loginOverlay.style.display = 'flex';
+      showView('inbox');
     }
   });
 
-  // Login handler
-  loginBtn.onclick = () => {
-    const email = emailInput.value;
-    const password = passwordInput.value;
-    auth.signInWithEmailAndPassword(email, password)
-      .catch(e => alert(e.message));
-  };
+  // Login UI
+  loginBtn.addEventListener('click', () => {
+    const email = emailInput.value.trim();
+    const password = passwordInput.value.trim();
+    if (!email || !password) return alert('Please enter email and password');
+    auth.signInWithEmailAndPassword(email, password).catch(e => alert(e.message));
+  });
 
-  // Logout function (optional)
-  // auth.signOut();
-
-  function showView(view) {
-    document.querySelectorAll('.container').forEach(c => c.style.display = 'none');
-    if (view === 'inbox') {
-      inboxView.style.display = 'block';
-    } else if (view === 'chat') {
-      chatView.style.display = 'block';
-    }
-  }
-
-  // Load current user's profile
-  function loadUserProfile() {
-    // Assuming profile info stored under /users/{uid}
-    db.ref('/users/' + currentUserId).once('value').then(snap => {
+  // Ensure user profile exists
+  function ensureUserProfile() {
+    const ref = db.ref('/users/' + currentUserId);
+    ref.once('value').then(snap => {
       if (!snap.exists()) {
-        // Create default profile if not exists
-        db.ref('/users/' + currentUserId).set({
-          displayName: auth.currentUser.email,
-          photoURL: '',
+        ref.set({
+          displayName: currentUser.displayName || currentUser.email || 'User',
+          photoURL: currentUser.photoURL || '',
           online: true,
           lastSeen: firebase.database.ServerValue.TIMESTAMP
         });
       } else {
-        // Update online status
-        db.ref('/users/' + currentUserId + '/online').set(true);
+        ref.update({ online: true });
       }
     });
   }
 
-  // Setup online/offline status
-  function setupOnlineStatus() {
-    window.addEventListener('beforeunload', () => {
-      if (currentUserId) {
-        db.ref('/users/' + currentUserId + '/online').set(false);
-        db.ref('/users/' + currentUserId + '/lastSeen').set(firebase.database.ServerValue.TIMESTAMP);
+  // Presence: set online and handle onDisconnect
+  function setupPresence() {
+    const connectedRef = db.ref('.info/connected');
+    const userRef = db.ref('/users/' + currentUserId);
+    connectedRef.on('value', snap => {
+      if (snap.val() === true) {
+        userRef.update({ online: true });
+        userRef.onDisconnect().update({ online: false, lastSeen: firebase.database.ServerValue.TIMESTAMP });
       }
+    });
+    window.addEventListener('unload', () => {
+      userRef.update({ online: false, lastSeen: firebase.database.ServerValue.TIMESTAMP });
     });
   }
 
-  // Load all users excluding current user
-  function loadInbox() {
-    if (inboxListener) {
-      // Remove previous listener if any
-      inboxListener.off();
-    }
-    inboxList.innerHTML = '';
-
+  // Inbox: listen for users
+  function startInboxListeners() {
     const usersRef = db.ref('/users');
-    inboxListener = usersRef.orderByKey();
-    inboxListener.on('value', snap => {
-      inboxList.innerHTML = '';
-      snap.forEach(userSnap => {
-        const uid = userSnap.key;
-        if (uid === currentUserId) return; // exclude self
-        const user = userSnap.val();
-        createUserItem(uid, user);
-      });
+    usersRef.on('child_added', snap => {
+      const uid = snap.key;
+      const data = snap.val();
+      if (uid === currentUserId) return;
+      createOrUpdateUserItem(uid, data);
     });
-  }
-
-  // Create user item in inbox
-  function createUserItem(uid, user) {
-    const item = document.createElement('div');
-    item.className = 'user-item';
-    item.onclick = () => openChat(uid, user.displayName || 'User', user.photoURL || '');
-
-    const profilePic = document.createElement('img');
-    profilePic.className = 'profile-pic';
-    profilePic.src = user.photoURL || 'https://via.placeholder.com/50';
-
-    const info = document.createElement('div');
-    info.className = 'user-info';
-
-    const name = document.createElement('div');
-    name.className = 'name';
-    name.textContent = user.displayName || 'User';
-
-    const lastMsgDiv = document.createElement('div');
-    lastMsgDiv.className = 'last-message';
-
-    const timestampDiv = document.createElement('div');
-    timestampDiv.className = 'timestamp';
-
-    // Unread badge
-    const unreadBadge = document.createElement('div');
-    unreadBadge.className = 'unread-badge';
-    unreadBadge.style.display = 'none';
-
-    info.appendChild(name);
-    info.appendChild(lastMsgDiv);
-
-    // Container
-    const container = document.createElement('div');
-    container.style.display='flex';
-    container.style.alignItems='center';
-
-    container.appendChild(profilePic);
-    container.appendChild(info);
-    container.appendChild(unreadBadge);
-    container.appendChild(timestampDiv);
-
-    item.appendChild(container);
-    inboxList.appendChild(item);
-
-    // Load last message info
-    loadLastMessage(uid, lastMsgDiv, timestampDiv, unreadBadge);
-  }
-
-  // Load last message for each user
-  function loadLastMessage(userId, lastMsgDiv, timestampDiv, unreadBadge) {
-    const chatId = getChatId(currentUserId, userId);
-    const messagesRef = db.ref('/messages/' + chatId);
-    const inboxRef = db.ref('/inboxes/' + currentUserId + '/' + userId);
-    // Listen for last message update
-    messagesRef.orderByChild('timestamp').limitToLast(1).on('value', snap => {
-      lastMsgDiv.innerHTML = '';
-      timestampDiv.innerHTML = '';
-      unreadBadge.style.display='none';
-
-      let lastMsg = null;
-      snap.forEach(msgSnap => {
-        lastMsg = msgSnap.val();
-      });
-      if (lastMsg) {
-        lastMsgDiv.textContent = lastMsg.text;
-        const date = new Date(lastMsg.timestamp);
-        timestampDiv.textContent = date.toLocaleString();
-
-        // Check unread status
-        inboxRef.once('value').then(inboxSnap => {
-          const inboxData = inboxSnap.val() || {};
-          if (inboxData.unreadCount && inboxData.unreadCount > 0 && lastMsg.sender !== currentUserId) {
-            unreadBadge.textContent = inboxData.unreadCount;
-            unreadBadge.style.display='block';
-          }
-        });
-      }
+    usersRef.on('child_changed', snap => {
+      const uid = snap.key;
+      const data = snap.val();
+      if (uid === currentUserId) return;
+      createOrUpdateUserItem(uid, data);
     });
+    usersRef.on('child_removed', snap => removeUserItem(snap.key));
   }
 
-  // Generate chat id based on user ids (sorted)
-  function getChatId(uid1, uid2) {
-    return [uid1, uid2].sort().join('_');
+  function createOrUpdateUserItem(uid, data) {
+    let entry = userItems[uid];
+    if (!entry) {
+      const item = document.createElement('div');
+      item.className = 'user-item';
+
+      const profilePic = document.createElement('img');
+      profilePic.className = 'profile-pic';
+      profilePic.src = data.photoURL || 'https://via.placeholder.com/50';
+
+      const info = document.createElement('div');
+      info.className = 'user-info';
+
+      const name = document.createElement('div');
+      name.className = 'name';
+      name.textContent = data.displayName || 'User';
+
+      const lastMsg = document.createElement('div');
+      lastMsg.className = 'last-message';
+
+      const ts = document.createElement('div');
+      ts.className = 'timestamp';
+
+      const unread = document.createElement('div');
+      unread.className = 'unread-badge';
+      unread.style.display = 'none';
+
+      const right = document.createElement('div');
+      right.style.display = 'flex';
+      right.style.flexDirection = 'column';
+      right.style.alignItems = 'flex-end';
+      right.appendChild(ts);
+      right.appendChild(unread);
+
+      info.appendChild(name);
+      info.appendChild(lastMsg);
+
+      const container = document.createElement('div');
+      container.style.display = 'flex';
+      container.style.alignItems = 'center';
+      container.style.width = '100%';
+      container.appendChild(profilePic);
+      container.appendChild(info);
+      container.appendChild(right);
+
+      item.appendChild(container);
+      item.addEventListener('click', () => openChatWith(uid));
+
+      inboxList.appendChild(item);
+
+      entry = { item, profilePic, name, lastMsg, ts, unread, lastMsgListener: null };
+      userItems[uid] = entry;
+
+      // Listen for inbox preview (personalized to current user)
+      db.ref('/inboxes/' + currentUserId + '/' + uid).on('value', snap => {
+        const d = snap.val();
+        if (d) {
+          entry.lastMsg.textContent = d.lastMessage || '';
+          entry.ts.textContent = d.timestamp ? new Date(d.timestamp).toLocaleString() : '';
+          if (d.unreadCount && d.unreadCount > 0) { entry.unread.textContent = d.unreadCount; entry.unread.style.display = 'inline-block'; }
+          else { entry.unread.style.display = 'none'; }
+        }
+      });
+
+      // Fallback: last message from messages if no inbox exists
+      const chatId = getChatId(currentUserId, uid);
+      const lastMsgRef = db.ref('/messages/' + chatId).orderByChild('timestamp').limitToLast(1);
+      lastMsgRef.on('value', snap => {
+        let last = null;
+        snap.forEach(s => last = s.val());
+        if (last && !entry.lastMsg.textContent) {
+          entry.lastMsg.textContent = last.text || '';
+          entry.ts.textContent = last.timestamp ? new Date(last.timestamp).toLocaleString() : '';
+        }
+      });
+
+      // Online indicator: append dot to name when online
+      db.ref('/users/' + uid + '/online').on('value', snap => {
+        const online = snap.val();
+        if (online) { entry.name.textContent = (data.displayName || 'User') + ' •'; entry.name.style.color = 'green'; }
+        else { entry.name.textContent = (data.displayName || 'User'); entry.name.style.color = ''; }
+      });
+
+    } else {
+      // update if exists
+      entry.profilePic.src = data.photoURL || entry.profilePic.src;
+      entry.name.textContent = data.displayName || entry.name.textContent;
+    }
   }
 
-  // Open chat with selected user
-  function openChat(uid, name, photoURL) {
+  function removeUserItem(uid) {
+    const e = userItems[uid];
+    if (!e) return;
+    e.item.remove();
+    delete userItems[uid];
+  }
+
+  function getChatId(a,b){ return [a,b].sort().join('_'); }
+
+  // Open chat and subscribe to messages
+  let messagesRefActive = null;
+  function openChatWith(uid) {
     currentChatUserId = uid;
-    currentChatUserName = name;
-    currentChatUserPhoto = photoURL;
-    chatWithEl.textContent = name;
-    // Set online status indicator
-    db.ref('/users/' + uid + '/online').on('value', snap => {
-      const online = snap.val();
-      currentChatUserOnline = online;
-      statusIndicator.style.background = online ? 'green' : 'gray';
-    });
+    chatWithEl.textContent = userItems[uid] ? userItems[uid].name.textContent.replace(' •','') : 'Chat';
+    db.ref('/users/' + uid + '/online').once('value').then(snap => statusIndicator.style.background = snap.val() ? 'green' : 'gray');
     showView('chat');
-    loadChatMessages();
-    resetUnreadCount();
+    loadChatMessages(uid);
+    // Reset unread
+    db.ref('/inboxes/' + currentUserId + '/' + uid).update({ unreadCount: 0 }).catch(()=>{});
   }
 
-  // Reset unread count after opening chat
-  function resetUnreadCount() {
-    if (currentChatUserId) {
-      const inboxRef = db.ref('/inboxes/' + currentUserId + '/' + currentChatUserId);
-      inboxRef.update({unreadCount: 0});
-    }
-  }
-
-  // Load chat messages
-  function loadChatMessages() {
-    if (chatRef) {
-      chatRef.off();
-    }
+  function loadChatMessages(otherUid) {
+    if (messagesRefActive) messagesRefActive.off();
     chatMessages.innerHTML = '';
-    const chatId = getChatId(currentUserId, currentChatUserId);
-    chatRef = db.ref('/messages/' + chatId);
-    chatRef.on('child_added', snap => {
-      const msg = snap.val();
-      displayMessage(msg);
+    const chatId = getChatId(currentUserId, otherUid);
+    const ref = db.ref('/messages/' + chatId).orderByChild('timestamp');
+    messagesRefActive = ref;
+    ref.on('child_added', snap => {
+      appendMessageToChat(snap.val());
     });
   }
 
-  // Display message
-  function displayMessage(msg) {
-    const msgDiv = document.createElement('div');
-    msgDiv.className = 'message ' + (msg.sender === currentUserId ? 'sent' : 'received');
-    msgDiv.textContent = msg.text;
+  function appendMessageToChat(msg) {
+    const wrapper = document.createElement('div');
+    wrapper.style.display = 'flex'; wrapper.style.flexDirection = 'column';
+    wrapper.style.alignItems = msg.sender === currentUserId ? 'flex-end' : 'flex-start';
+    wrapper.style.margin = '6px 0';
 
-    const timestampDiv = document.createElement('div');
-    timestampDiv.className = 'message-timestamp';
-    timestampDiv.textContent = new Date(msg.timestamp).toLocaleString();
+    const bubble = document.createElement('div');
+    bubble.className = 'message ' + (msg.sender === currentUserId ? 'sent' : 'received');
+    bubble.textContent = msg.text;
 
-    const container = document.createElement('div');
-    container.appendChild(msgDiv);
-    container.appendChild(timestampDiv);
-    chatMessages.appendChild(container);
-    // Auto scroll
+    const ts = document.createElement('div');
+    ts.className = 'message-timestamp';
+    ts.textContent = msg.timestamp ? new Date(msg.timestamp).toLocaleString() : '';
+
+    wrapper.appendChild(bubble); wrapper.appendChild(ts);
+    chatMessages.appendChild(wrapper);
     chatMessages.scrollTop = chatMessages.scrollHeight;
   }
 
-  // Send message
-  function sendMessage() {
+  // Send message and update inbox previews
+  sendBtn.addEventListener('click', sendMessage);
+  messageInput.addEventListener('keydown', e => { if (e.key === 'Enter') sendMessage(); });
+
+  function sendMessage(){
     const text = messageInput.value.trim();
-    if (text === '' || !currentUserId || !currentChatUserId) return;
+    if (!text || !currentChatUserId) return;
     const chatId = getChatId(currentUserId, currentChatUserId);
-    const msgRef = db.ref('/messages/' + chatId).push();
-    const timestamp = Date.now();
-    const messageData = {
-      sender: currentUserId,
-      receiver: currentChatUserId,
-      text,
-      timestamp
-    };
-    msgRef.set(messageData).then(() => {
-      // Update inbox previews
-      updateInboxPreviews(currentUserId, currentChatUserId, messageData);
-      updateInboxPreviews(currentChatUserId, currentUserId, messageData);
-      // Clear input
-      messageInput.value = '';
-    });
-  }
-
-  // Update inbox previews
-  function updateInboxPreviews(senderId, receiverId, message) {
-    const inboxRef = db.ref('/inboxes/' + senderId + '/' + receiverId);
-    // Increment unread count for receiver
-    if (senderId !== receiverId) {
-      db.ref('/inboxes/' + receiverId + '/' + senderId).transaction(current => {
-        if (current && current.unreadCount) {
-          return { lastMessage: message.text, timestamp: message.timestamp, unreadCount: current.unreadCount + 1 };
-        } else {
-          return { lastMessage: message.text, timestamp: message.timestamp, unreadCount: 1 };
-        }
+    const newRef = db.ref('/messages/' + chatId).push();
+    const messageData = { sender: currentUserId, receiver: currentChatUserId, text, timestamp: firebase.database.ServerValue.TIMESTAMP };
+    newRef.set(messageData).then(()=> newRef.once('value')).then(snap => {
+      const saved = snap.val();
+      // Sender preview
+      db.ref('/inboxes/' + currentUserId + '/' + currentChatUserId).set({ lastMessage: saved.text, timestamp: saved.timestamp, unreadCount: 0 });
+      // Receiver preview increment
+      const recvRef = db.ref('/inboxes/' + currentChatUserId + '/' + currentUserId);
+      recvRef.transaction(current => {
+        if (current === null) return { lastMessage: saved.text, timestamp: saved.timestamp, unreadCount: 1 };
+        return { lastMessage: saved.text, timestamp: saved.timestamp, unreadCount: (current.unreadCount || 0) + 1 };
       });
-    }
+      messageInput.value = '';
+    }).catch(e => console.error(e));
   }
 
-  // Back to inbox
-  backBtn.onclick = () => {
-    if (chatRef) {
-      chatRef.off();
-    }
-    currentChatUserId = null;
-    showView('inbox');
-  };
-
-  // Send button
-  sendBtn.onclick = () => {
-    sendMessage();
-  };
-
-  // Enter key to send message
-  messageInput.addEventListener('keydown', e => {
-    if (e.key === 'Enter') {
-      sendMessage();
-    }
+  // Back button
+  backBtn.addEventListener('click', () => {
+    if (messagesRefActive) messagesRefActive.off();
+    currentChatUserId = null; showView('inbox');
   });
+
+  // Cleanup presence on unload
+  window.addEventListener('beforeunload', () => {
+    if (currentUserId) db.ref('/users/' + currentUserId).update({ online: false, lastSeen: firebase.database.ServerValue.TIMESTAMP });
+  });
+
+  // Recommended Realtime Database rules (example):
+  /*
+  {
+    "rules": {
+      "users": {
+        "$uid": {
+          ".read": "auth != null",
+          ".write": "auth != null && auth.uid === $uid"
+        }
+      },
+      "messages": {
+        "$chatId": {
+          "$messageId": {
+            ".read": "auth != null",
+            ".write": "auth != null && newData.child('sender').val() === auth.uid"
+          }
+        }
+      },
+      "inboxes": {
+        "$uid": {
+          ".read": "auth != null && auth.uid === $uid",
+          ".write": "auth != null && auth.uid === $uid"
+        }
+      }
+    }
+  }
+  */
+
 </script>
 
 </body>
