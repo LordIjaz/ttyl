@@ -4,110 +4,183 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>TTYL - Talk To You Later</title>
+  <!-- Google Fonts for a modern look -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet" />
   <style>
+    /* Reset some default styles */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
     body {
-      margin: 0;
-      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-family: 'Montserrat', sans-serif;
+      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
       color: #f0f0f0;
-      background-color: #000; /* Black background */
+      line-height: 1.6;
     }
+
+    /* Header styling */
     header {
-      background-color: #222; /* Darker black for header */
-      padding: 20px;
+      padding: 30px 20px;
       text-align: center;
-      color: #ffd700; /* Gold text */
+      background: rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(10px);
     }
+
     header h1 {
-      margin: 0;
-      font-size: 2.5em;
+      font-size: 3em;
       letter-spacing: 2px;
+      color: #ffd700; /* Gold */
+      font-weight: 700;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
     }
+
+    /* Hero section styling */
     .hero {
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 60px 20px;
-      background-color: #000;
+      justify-content: center;
+      padding: 80px 20px;
       text-align: center;
+      background: rgba(0, 0, 0, 0.2);
+      position: relative;
+      overflow: hidden;
     }
+
+    .hero::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: radial-gradient(circle, rgba(255, 215, 0, 0.1), transparent 70%);
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      max-width: 800px;
+    }
+
     .hero h2 {
-      font-size: 2em;
+      font-size: 3em;
       margin-bottom: 20px;
-      color: #ffd700; /* Gold */
+      color: #fff;
+      text-shadow: 1px 1px 4px rgba(0,0,0,0.7);
     }
+
     .hero p {
-      max-width: 600px;
-      font-size: 1.2em;
-      margin-bottom: 30px;
-      color: #ccc; /* Silver/grey */
+      font-size: 1.5em;
+      margin-bottom: 40px;
+      color: #ddd;
+      line-height: 1.4;
     }
-    .buttons {
+
+    /* Buttons styling */
+    .btn-group {
       display: flex;
       gap: 20px;
-      flex-wrap: wrap;
       justify-content: center;
+      flex-wrap: wrap;
     }
+
     .btn {
       padding: 15px 30px;
-      font-size: 1em;
+      font-size: 1.2em;
+      font-weight: 600;
+      border-radius: 8px;
       border: none;
-      border-radius: 5px;
       cursor: pointer;
+      transition: all 0.3s ease;
       text-decoration: none;
-      transition: background-color 0.3s, transform 0.2s;
+      box-shadow: 0 8px 15px rgba(0,0,0,0.2);
     }
+
     .btn-signup {
-      background-color: #ffd700; /* Gold */
+      background: linear-gradient(135deg, #ffd700, #ffb700);
       color: #000;
     }
+
     .btn-signup:hover {
-      background-color: #e6c200;
-      transform: scale(1.05);
+      background: linear-gradient(135deg, #e6c200, #d6a600);
+      transform: translateY(-3px);
     }
+
     .btn-login {
-      background-color: #bbb; /* Silver */
+      background-color: #ccc;
       color: #000;
     }
+
     .btn-login:hover {
-      background-color: #999;
-      transform: scale(1.05);
+      background-color: #bbb;
+      transform: translateY(-3px);
     }
+
+    /* Features section styling */
     .features {
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
-      padding: 40px 20px;
-      background-color: #111; /* Slightly lighter black for contrast */
+      padding: 60px 20px;
+      background: linear-gradient(135deg, #2c5364, #203a43, #0f2027);
     }
+
     .feature {
-      flex: 1 1 250px;
-      max-width: 300px;
+      background-color: rgba(255, 255, 255, 0.05);
       margin: 20px;
-      background-color: #222;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-      text-align: center;
-      color: #ccc;
+      padding: 30px 20px;
+      border-radius: 15px;
+      max-width: 300px;
+      flex: 1 1 250px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+      transition: transform 0.3s, box-shadow 0.3s;
     }
+
+    .feature:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+
     .feature h3 {
-      margin-top: 0;
-      color: #ffd700; /* Gold for headings */
-    }
-    footer {
-      background-color: #222;
-      color: #ccc;
+      margin-bottom: 15px;
+      color: #ffd700;
+      font-size: 1.5em;
       text-align: center;
-      padding: 20px;
     }
+
+    .feature p {
+      text-align: center;
+      font-size: 1.1em;
+      color: #ddd;
+    }
+
+    /* Footer styling */
+    footer {
+      padding: 30px 20px;
+      background-color: #111;
+      text-align: center;
+      font-size: 1em;
+      color: #999;
+      margin-top: 40px;
+    }
+
+    /* Responsive styles */
     @media(max-width: 768px){
-      .features {
-        flex-direction: column;
-        align-items: center;
+      .hero h2 {
+        font-size: 2em;
       }
-      .buttons {
+      .hero p {
+        font-size: 1.2em;
+      }
+      .btn-group {
         flex-direction: column;
-        gap: 10px;
+        gap: 15px;
+      }
+      .feature {
+        margin: 15px 0;
       }
     }
   </style>
@@ -116,31 +189,33 @@
   <header>
     <h1>TTYL - Talk To You Later</h1>
   </header>
-  
+
   <section class="hero">
-    <h2>Connect Instantly. Chat Everywhere.</h2>
-    <p>TTYL is your seamless messaging platform for staying in touch with friends, family, and colleagues anytime, anywhere.</p>
-    <div class="buttons">
-      <a href="signup.html" class="btn btn-signup">Sign Up</a>
-      <a href="login.html" class="btn btn-login">Log In</a>
+    <div class="hero-content">
+      <h2>Connect Instantly. Chat Everywhere.</h2>
+      <p>Experience seamless messaging with friends, family, and colleagues. Stay connected anytime, anywhere with TTYL.</p>
+      <div class="btn-group">
+        <a href="signup.html" class="btn btn-signup">Get Started</a>
+        <a href="login.html" class="btn btn-login">Log In</a>
+      </div>
     </div>
   </section>
-  
+
   <section class="features">
     <div class="feature">
       <h3>Real-Time Messaging</h3>
-      <p>Instantly send and receive messages with your contacts in real-time.</p>
+      <p>Send and receive messages instantly with smooth, real-time updates.</p>
     </div>
     <div class="feature">
       <h3>Secure & Private</h3>
-      <p>Your conversations are protected with end-to-end encryption.</p>
+      <p>End-to-end encryption ensures your conversations stay private and protected.</p>
     </div>
     <div class="feature">
       <h3>Cross-Platform</h3>
-      <p>Accessible on all devices — mobile, tablet, and desktop.</p>
+      <p>Use TTYL on mobile, tablet, or desktop — your conversations go where you go.</p>
     </div>
   </section>
-  
+
   <footer>
     <p>&copy; 2024 TTYL - Talk To You Later. All rights reserved.</p>
   </footer>
