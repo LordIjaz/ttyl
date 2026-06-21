@@ -1,186 +1,152 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Firebase Chat System</title>
-<!-- Google Fonts -->
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet" />
-<style>
-  body {
-    margin: 0; font-family: 'Montserrat', sans-serif;
-    background: linear-gradient(270deg, #1e3c72, #2a5298, #1e3c72);
-    background-size: 600% 600%;
-    animation: gradientBG 15s ease infinite;
-    display: flex; flex-direction: column; align-items: center; padding: 20px; color: #fff;
-  }
-  @keyframes gradientBG {
-    0% {background-position: 0% 50%;}
-    50% {background-position: 100% 50%;}
-    100% {background-position: 0% 50;}
-  }
-  h1 {margin-top: 0; margin-bottom: 10px;}
-  #auth-section, #chat-section {width: 100%; max-width: 600px; margin: 20px 0; padding: 10px; border-radius: 10px; background: rgba(255,255,255,0.1);}
-  button {
-    padding: 10px; margin: 5px; border: none; border-radius: 8px; cursor: pointer;
-    font-weight: bold; font-family: 'Montserrat', sans-serif;
-  }
-  #user-search { width: 100%; padding: 8px; border-radius: 8px; border: none; margin-bottom: 10px;}
-  #user-list { max-height: 150px; overflow-y: auto; }
-  #messages { height: 300px; overflow-y: auto; border: 1px solid #ccc; padding: 10px; border-radius: 8px; background: #fff; color: #000; }
-  #message-input { width: 100%; display: flex; margin-top: 10px; }
-  #message-text { flex: 1; padding: 8px; border-radius: 8px; border: none; }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Firebase Messaging System</title>
+  <style>
+    /* Basic styling for clarity */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    #searchContainer, #chatContainer {
+      margin-bottom: 20px;
+    }
+    #messages {
+      border: 1px solid #ccc;
+      height: 300px;
+      overflow-y: scroll;
+      padding: 10px;
+    }
+    .message {
+      margin-bottom: 10px;
+    }
+    .myMessage {
+      text-align: right;
+      color: blue;
+    }
+  </style>
 </head>
 <body>
 
-<h1>Firebase Chat System</h1>
+<h1>Firebase User Messaging</h1>
 
-<div id="auth-section">
-  <h2>Login</h2>
-  <button id="google-login">Login with Google</button>
-  <button id="apple-login">Login with Apple (demo)</button>
+<div id="searchContainer">
+  <input type="text" id="searchUserId" placeholder="Enter User ID to chat" />
+  <button id="searchBtn">Search</button>
 </div>
 
-<div id="search-section" style="display:none;">
-  <h2>Search Users</h2>
-  <input type="text" id="user-search" placeholder="Search for users..."/>
-  <div id="user-list"></div>
-</div>
-
-<div id="chat-section" style="display:none;">
-  <h2>Chat with <span id="chat-with"></span></h2>
+<div id="chatContainer" style="display: none;">
+  <h3>Chat with <span id="chatWithUserId"></span></h3>
   <div id="messages"></div>
-  <div id="message-input">
-    <input type="text" id="message-text" placeholder="Type a message" />
-    <button id="send-btn">Send</button>
-  </div>
-  <button id="logout-btn">Logout</button>
+  <input type="text" id="messageInput" placeholder="Type your message" />
+  <button id="sendBtn">Send</button>
 </div>
 
-<!-- Firebase JS SDK -->
+<!-- Firebase SDKs -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
 <script>
-  // Your Firebase config here
+  // Your Firebase configuration
   const firebaseConfig = {
-  apiKey: "AIzaSyANtmPajpe7laVQ_sL0kCcSwixZ0aIqvy0",
-  authDomain: "ttyl-4534b.firebaseapp.com",
-  projectId: "ttyl-4534b",
-  storageBucket: "ttyl-4534b.firebasestorage.app",
-  messagingSenderId: "311574301037",
-  appId: "1:311574301037:web:b5bdc244bc8bb341e5f264",
-  measurementId: "G-TYBCD4ERG4"
-};
+    apiKey: "AIzaSyANtmPajpe7laVQ_sL0kCcSwixZ0aIqvy0",
+    authDomain: "ttyl-4534b.firebaseapp.com",
+    projectId: "ttyl-4534b",
+    storageBucket: "ttyl-4534b.firebaseapp.com",
+    messagingSenderId: "311574301037",
+    appId: "1:311574301037:web:b5bdc244bc8bb341e5f264",
+    measurementId: "G-TYBCD4ERG4"
+  };
 
+  // Initialize Firebase
   firebase.initializeApp(firebaseConfig);
   const auth = firebase.auth();
-  const db = firebase.database();
+  const database = firebase.database();
 
-  let currentUser = null;
+  let currentUserId = null;
   let chatPartnerId = null;
+  let messagesRef = null;
 
-  // Login handlers
- document.getElementById('google-login').onclick = ()=> {
-   const provider = new firebase.auth.GoogleAuthProvider();
-   auth.signInWithPopup(provider).then(setupUser);
- };
+  // Simulate user login for demonstration
+  // Replace this with actual login flow
+  auth.signInAnonymously()
+    .then(() => {
+      currentUserId = auth.currentUser.uid;
+      console.log("Logged in as:", currentUserId);
+    })
+    .catch((error) => {
+      console.error("Auth error:", error);
+    });
 
- document.getElementById('apple-login').onclick = ()=> {
-   // Apple login in Firebase Web requires OAuth flow setup, here just demo
-   alert('Apple login not implemented in demo');
- };
-
- auth.onAuthStateChanged(user => {
-   if(user){
-     currentUser = user;
-     document.getElementById('auth-section').style.display='none';
-     document.getElementById('search-section').style.display='block';
-     document.getElementById('chat-section').style.display='none';
-     loadUsers();
-   } else {
-     // Not logged in
-     document.getElementById('auth-section').style.display='block';
-     document.getElementById('search-section').style.display='none';
-     document.getElementById('chat-section').style.display='none';
-   }
- });
-
- function setupUser(user) {
-   currentUser = user.user;
-   document.getElementById('auth-section').style.display='none';
-   document.getElementById('search-section').style.display='block';
-   loadUsers();
- }
-
- // Load users from database for search
-function loadUsers(){
-  const userRef = db.ref('users');
-  userRef.once('value', snap => {
-    const users = snap.val() || {};
-    displayUserList(users);
-  });
-}
-
-// Display user list
-function displayUserList(users) {
-  const listDiv = document.getElementById('user-list');
-  listDiv.innerHTML = '';
-  Object.keys(users).forEach(uid => {
-    if(uid !== currentUser.uid){
-      const btn = document.createElement('button');
-      btn.innerText = users[uid].name || uid;
-      btn.onclick = ()=> startChat(uid, users[uid].name);
-      listDiv.appendChild(btn);
+  document.getElementById('searchBtn').addEventListener('click', () => {
+    const userIdToChat = document.getElementById('searchUserId').value.trim();
+    if (userIdToChat && userIdToChat !== currentUserId) {
+      chatPartnerId = userIdToChat;
+      document.getElementById('chatWithUserId').innerText = chatPartnerId;
+      document.getElementById('chatContainer').style.display = 'block';
+      loadMessages();
+    } else {
+      alert('Please enter a valid User ID different from your own.');
     }
   });
-}
 
-// Start chat with selected user
-function startChat(uid, name){
-  chatPartnerId = uid;
-  document.getElementById('chat-with').innerText = name;
-  document.getElementById('chat-section').style.display='block';
-  loadMessages();
-}
-
-// Load messages
-function loadMessages(){
-  const messagesDiv = document.getElementById('messages');
-  messagesDiv.innerHTML='';
-
-  const chatRef = db.ref(`messages/${getChatId(currentUser.uid, chatPartnerId)}`);
-  chatRef.on('child_added', snap => {
-    const msg = snap.val();
-    const p = document.createElement('p');
-    p.innerText = msg.sender === currentUser.uid ? 'Me: ' + msg.text : 'Them: ' + msg.text;
-    messagesDiv.appendChild(p);
-    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+  document.getElementById('sendBtn').addEventListener('click', () => {
+    sendMessage();
   });
-}
 
-// Send message
-document.getElementById('send-btn').onclick = ()=> {
-  const text = document.getElementById('message-text').value;
-  if(!text || !chatPartnerId) return;
-  const chatRef = db.ref(`messages/${getChatId(currentUser.uid, chatPartnerId)}`);
-  chatRef.push({ sender: currentUser.uid, text: text });
-  document.getElementById('message-text').value = '';
-}
+  document.getElementById('messageInput').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      sendMessage();
+    }
+  });
 
-// Logout
-document.getElementById('logout-btn').onclick = ()=> {
-  auth.signOut();
-  document.getElementById('chat-section').style.display='none';
-  document.getElementById('search-section').style.display='none';
-}
+  function getChatPath(userId1, userId2) {
+    // Consistent ordering for chat path
+    return [userId1, userId2].sort().join('_');
+  }
 
-// Helper to create consistent chat IDs
-function getChatId(uid1, uid2){
-  return [uid1, uid2].sort().join('_');
-}
+  function loadMessages() {
+    if (messagesRef) {
+      messagesRef.off(); // Detach previous listener
+    }
+    const chatPath = getChatPath(currentUserId, chatPartnerId);
+    messagesRef = database.ref('messages/' + chatPath);
+    messagesRef.on('child_added', (snapshot) => {
+      const message = snapshot.val();
+      displayMessage(message);
+    });
+  }
+
+  function displayMessage(message) {
+    const messagesDiv = document.getElementById('messages');
+    const msgDiv = document.createElement('div');
+    msgDiv.className = 'message';
+    if (message.senderId === currentUserId) {
+      msgDiv.className += ' myMessage';
+      msgDiv.innerText = `You: ${message.text}`;
+    } else {
+      msgDiv.innerText = `${chatPartnerId}: ${message.text}`;
+    }
+    messagesDiv.appendChild(msgDiv);
+    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+  }
+
+  function sendMessage() {
+    const messageText = document.getElementById('messageInput').value.trim();
+    if (messageText && chatPartnerId) {
+      const chatPath = getChatPath(currentUserId, chatPartnerId);
+      const newMsgRef = database.ref('messages/' + chatPath).push();
+      newMsgRef.set({
+        senderId: currentUserId,
+        text: messageText,
+        timestamp: Date.now()
+      });
+      document.getElementById('messageInput').value = '';
+    }
+  }
 </script>
 
 </body>

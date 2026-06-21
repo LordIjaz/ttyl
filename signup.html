@@ -272,6 +272,12 @@
     document.getElementById('appleSignUp').addEventListener('click', () => {
       alert('Apple Sign-Up is not implemented yet.');
     });
+
+    auth.onAuthStateChanged(user => {
+    if(user){
+      window.location.href = 'main.html';
+    }
+  });
   </script>
 </body>
 </html>

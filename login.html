@@ -294,6 +294,12 @@
       alert('Apple login is not directly supported in Firebase Web SDK. You need to implement OAuth flow.');
       // You could implement OAuth flow here if desired
     });
+
+    auth.onAuthStateChanged(user => {
+    if(user){
+      window.location.href = 'main.html';
+    }
+  });
   </script>
 </body>
 </html>
