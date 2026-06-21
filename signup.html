@@ -228,14 +228,13 @@
   <script>
     // Your Firebase configuration (replace with your actual config)
     const firebaseConfig = {
-  apiKey: "AIzaSyANtmPajpe7laVQ_sL0kCcSwixZ0aIqvy0",
-  authDomain: "ttyl-4534b.firebaseapp.com",
-  projectId: "ttyl-4534b",
-  storageBucket: "ttyl-4534b.firebasestorage.app",
-  messagingSenderId: "311574301037",
-  appId: "1:311574301037:web:b5bdc244bc8bb341e5f264",
-  measurementId: "G-TYBCD4ERG4"
-};
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_AUTH_DOMAIN",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_STORAGE_BUCKET",
+      messagingSenderId: "YOUR_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
     // Initialize Firebase
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
@@ -248,7 +247,7 @@
       auth.createUserWithEmailAndPassword(email, password)
         .then(() => {
           alert('Account created successfully!');
-          window.location.href = 'login.html';
+          window.location.href = 'main.html'; // Redirect after success
         })
         .catch((error) => {
           alert('Error: ' + error.message);
@@ -261,7 +260,7 @@
       auth.signInWithPopup(provider)
         .then((result) => {
           alert('Signed up with Google!');
-          window.location.href = 'main.html';
+          window.location.href = 'main.html'; // Redirect after success
         })
         .catch((error) => {
           alert('Error: ' + error.message);
