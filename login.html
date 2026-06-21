@@ -130,29 +130,87 @@
       transform: translateY(-2px);
     }
 
-    /* Links below the form */
-    .links {
-      margin-top: 20px;
+    /* Social login buttons container */
+    .social-buttons {
+      margin-top: 30px;
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 15px;
     }
 
-    a {
-      color: #66ffff;
-      text-decoration: none;
-      font-size: 1em;
-      transition: color 0.3s, text-shadow 0.3s;
+    /* Social buttons styling with glow hover */
+    .social-btn {
+      padding: 14px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1.1em;
+      cursor: pointer;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: box-shadow 0.3s, transform 0.3s, background 0.3s;
+      box-shadow: 0 0 10px #00ffff;
     }
 
-    a:hover {
-      color: #ffffff;
-      text-shadow: 0 0 8px #00ffff;
+    /* Google style */
+    .google-btn {
+      background: linear-gradient(135deg, #4285F4, #357ae8);
+    }
+    .google-btn:hover {
+      background: linear-gradient(135deg, #3060c0, #214080);
+      box-shadow: 0 0 20px #00ffff;
+      transform: translateY(-2px);
+    }
+
+    /* Apple style */
+    .apple-btn {
+      background: linear-gradient(135deg, #FF7F50, #FF6347);
+    }
+    .apple-btn:hover {
+      background: linear-gradient(135deg, #FF6347, #FF4500);
+      box-shadow: 0 0 20px #FF7F50;
+      transform: translateY(-2px);
+    }
+
+    /* Additional styling for new buttons */
+    .custom-btn {
+      font-size: 1.1em;
+      padding: 14px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      transition: box-shadow 0.3s, transform 0.3s, background 0.3s;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 10px #00ffff;
+    }
+
+    /* Specific styles for Google login button */
+    #googleLogin {
+      background: linear-gradient(135deg, #4285F4, #357ae8);
+    }
+    #googleLogin:hover {
+      background: linear-gradient(135deg, #3060c0, #214080);
+      box-shadow: 0 0 20px #00ffff;
+      transform: translateY(-2px);
+    }
+
+    /* Specific styles for Apple login button */
+    #appleLogin {
+      background: linear-gradient(135deg, #FF7F50, #FF6347);
+    }
+    #appleLogin:hover {
+      background: linear-gradient(135deg, #FF6347, #FF4500);
+      box-shadow: 0 0 20px #FF7F50;
+      transform: translateY(-2px);
     }
 
     /* Responsive adjustments */
     @media(max-width: 500px){
-      .container-box {
+      .container {
         padding: 20px;
       }
       h1 {
@@ -168,9 +226,9 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 </head>
 <body>
-  <div class="container">
+  <div class="main-container">
     <div class="site-name">TTYL</div>
-    <div class="container-box">
+    <div class="container">
       <h1>Welcome Back</h1>
       <h2>Log in to your account</h2>
       <form id="login-form">
@@ -178,8 +236,12 @@
         <input type="password" id="password" placeholder="Password" required />
         <button type="submit">Log In</button>
       </form>
+      <!-- Login with Google -->
+      <button class="custom-btn" id="googleLogin" style="margin-top:20px;">Login with Google</button>
+      <!-- Login with Apple -->
+      <button class="custom-btn" id="appleLogin" style="margin-top:10px;">Login with Apple</button>
       <div class="links">
-        <a href="signup.html">Create an account</a>
+        <a href="signup.html" style="margin-top:15px;">Create an account</a>
       </div>
     </div>
   </div>
@@ -187,30 +249,50 @@
   <script>
     // Firebase config (replace with your actual config)
     const firebaseConfig = {
-      apiKey: "YOUR_API_KEY",
-      authDomain: "YOUR_AUTH_DOMAIN",
-      projectId: "YOUR_PROJECT_ID",
-      storageBucket: "YOUR_STORAGE_BUCKET",
-      messagingSenderId: "YOUR_SENDER_ID",
-      appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyANtmPajpe7laVQ_sL0kCcSwixZ0aIqvy0",
+  authDomain: "ttyl-4534b.firebaseapp.com",
+  projectId: "ttyl-4534b",
+  storageBucket: "ttyl-4534b.firebasestorage.app",
+  messagingSenderId: "311574301037",
+  appId: "1:311574301037:web:b5bdc244bc8bb341e5f264",
+  measurementId: "G-TYBCD4ERG4"
+};
     };
 
     // Initialize Firebase
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
 
-    // When login is successful, redirect to main.html
+    // Login with email/password
     document.getElementById('login-form').addEventListener('submit', function(e) {
       e.preventDefault();
       const email = document.getElementById('email').value;
       const password = document.getElementById('password').value;
       auth.signInWithEmailAndPassword(email, password)
         .then(() => {
-          window.location.href = 'main.html'; // Redirect to main.html
+          window.location.href = 'main.html'; // Redirect after login
         })
         .catch((error) => {
           alert('Error: ' + error.message);
         });
+    });
+
+    // Login with Google
+    document.getElementById('googleLogin').addEventListener('click', () => {
+      const provider = new firebase.auth.GoogleAuthProvider();
+      auth.signInWithPopup(provider)
+        .then(() => {
+          window.location.href = 'main.html'; // Redirect after login
+        })
+        .catch((error) => {
+          alert('Error: ' + error.message);
+        });
+    });
+
+    // Login with Apple (simulate, as Firebase doesn't have native Apple provider in web)
+    document.getElementById('appleLogin').addEventListener('click', () => {
+      alert('Apple login is not directly supported in Firebase Web SDK. You need to implement OAuth flow.');
+      // You could implement OAuth flow here if desired
     });
   </script>
 </body>
